@@ -1,0 +1,23 @@
+{
+    "names": ["docli","leaf"],
+    "commands":[
+        {
+            "name":"echo",
+            "usage":"",
+            "type":"shell",
+            "command":"echo wotcha"
+        },
+        {
+            "name": "dockerhello",
+            "usage": "",
+            "type": "docker",
+            "command": "hello-world"
+        },
+        {
+            "name": "search",
+            "usage": "",
+            "type": "url",
+            "command": "https://www.google.com/"
+        }
+    ]
+}

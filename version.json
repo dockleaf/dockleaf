@@ -1,0 +1,19 @@
+{
+    "latest": {
+        "name":"charlie",
+        "date":"20171122154822",
+        "sha":"54A10F27D62E0A468D2A0A9460C13FA7AE91C2D1FF9ADA1A05A81A8A1C01ADFC"
+    },
+    "versions": [
+        {
+            "name": "frank",
+            "date": "20171122101010",
+            "sha": "77646F5A4F3166637627ABE998E7A1470FE72D8B430F067DAFA86263F1F23F94"
+        },
+        {
+            "name": "dee",
+            "date": "20171115151515",
+            "sha": "E7834034BD059ECF00B0661F88F1E7242450BF1951C1E76803E80CE4182E2E9C"
+        }
+    ]
+}
