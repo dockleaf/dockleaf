@@ -48,15 +48,7 @@ func main() {
 	app.Usage = "Ever changing dev/ops functions, in a consistent way..."
 	app.Action = func(c *cli.Context) error {
 
-		definitionFile := c.Args().Get(0)
-		definition := toDefinition(definitionFile)
-		var version Version
-		if len(c.Args()) > 1 {
-			versionFile := c.Args().Get(1)
-			version = toVersion(versionFile)
-		} else {
-			version = Version{}
-		}
+		definition, version := getInputs(c.Args())
 
 		fmt.Println(definition)
 		fmt.Println(version)
@@ -71,11 +63,28 @@ func main() {
 	app.Run(os.Args)
 }
 
+func getInputs(args cli.Args) (Definition, Version) {
+
+	var definitionFile, versionFile string
+
+	if args.Present() {
+		definitionFile = args.Get(0)
+		versionFile = args.Get(1)
+	} else {
+		definitionFile = os.Getenv("DOCKLEAF_DEFINITION")
+		versionFile = os.Getenv("DOCKLEAF_VERSION")
+	}
+
+	definition := toDefinition(definitionFile)
+	version := toVersion(versionFile)
+	return definition, version
+}
+
 func readFile(filename string) []byte {
 	filecontents, err := ioutil.ReadFile(filename)
 	if err != nil {
 		if os.IsNotExist(err) {
-			fmt.Println("couldn't find the file")
+			fmt.Println("Couldn't find the file: " + filename)
 		} else {
 			fmt.Println(err.Error())
 			os.Exit(1)
@@ -92,6 +101,11 @@ func toDefinition(filename string) Definition {
 
 func toVersion(filename string) Version {
 	var version Version
-	json.Unmarshal(readFile(filename), &version)
+	if len(filename) > 0 {
+		json.Unmarshal(readFile(filename), &version)
+	} else {
+		version = Version{}
+	}
+
 	return version
 }
