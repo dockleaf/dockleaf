@@ -1,12 +1,14 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"log"
 	"os"
 	"os/exec"
+	"path/filepath"
+	"strings"
 
 	"github.com/urfave/cli"
 )
@@ -53,14 +55,34 @@ func main() {
 		fmt.Println(definition)
 		fmt.Println(version)
 		cmd := exec.Command("go", "build", "-o", definition.Names[0])
+		var out bytes.Buffer
+		var stderr bytes.Buffer
+		cmd.Stdout = &out
+		cmd.Stderr = &stderr
 		err := cmd.Run()
 		if err != nil {
-			log.Fatal(err)
+			fmt.Println(fmt.Sprint(err) + ": " + stderr.String())
+			return nil
 		}
+		fmt.Println("Result: " + out.String())
+
+		createOtherNames(definition.Names)
+
 		return nil
 	}
 
 	app.Run(os.Args)
+}
+
+func createOtherNames(names []string) {
+	path := os.Getenv("PWD")
+	target := names[0]
+	for i, name := range names {
+		if i != 0 {
+			symlink := filepath.Join(path, name)
+			os.Symlink(target, symlink)
+		}
+	}
 }
 
 func getInputs(args cli.Args) (Definition, Version) {
@@ -74,6 +96,14 @@ func getInputs(args cli.Args) (Definition, Version) {
 		definitionFile = os.Getenv("DOCKLEAF_DEFINITION")
 		versionFile = os.Getenv("DOCKLEAF_VERSION")
 	}
+
+	for _, e := range os.Environ() {
+		pair := strings.Split(e, "=")
+		fmt.Println(pair[0], "=", pair[1])
+	}
+
+	fmt.Println("Definition:" + definitionFile)
+	fmt.Println("Version:" + versionFile)
 
 	definition := toDefinition(definitionFile)
 	version := toVersion(versionFile)
